@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head><title>How I write more testable code &ndash; preston harrison</title>
+<meta name="description" content="My portfolio and blog site.">
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="UTF-8"/>
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.2/css/all.min.css" integrity="sha512-1sCRPdkRXhBV2PBLUdRb4tMg1w2YPf37qatUFeS7zlBy7jJI8Lf4VHwWfZZfpXtYSLy85pkm9GaYVYMfw5BC1A==" crossorigin="anonymous" />
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.9.1/css/academicons.min.css" integrity="sha512-b1ASx0WHgVFL5ZQhTgiPWX+68KjS38Jk87jg7pe+qC7q9YkEtFq0z7xCglv7qGIs/68d3mAp+StfC8WKC5SSAg==" crossorigin="anonymous" />
+
+
+<link rel="stylesheet" href="https://prestonharrison.com/css/palettes/base16-dark.css">
+<link rel="stylesheet" href="https://prestonharrison.com/css/risotto.css">
+<link rel="stylesheet" href="https://prestonharrison.com/css/custom.css">
+
+
+
+
+
+
+
+</head>
+
+    <body>
+        <div class="page">
+
+            <header class="page__header"><nav class="page__nav main-nav">
+    <ul>
+    <h1 class="page__logo"><a href="https://prestonharrison.com" class="page__logo-inner">preston harrison</a></h1>
+    
+    
+    <li class="main-nav__item"><a class="nav-main-item active" href="https://prestonharrison.com/posts/" title="Posts">Posts</a></li>
+    
+    </ul>
+</nav>
+
+</header>
+
+            <section class="page__body">
+    <header class="content__header">
+        <h1>How I write more testable code</h1>
+    </header>
+    
+    <div class="content__body">
+        <p>Early in my development journey, my functions often combined data fetching with data
+manipulation. This approach made testing cumbersome, as it required mocking
+external IO operations. I&rsquo;ve pivoted to two main strategies that have simplified my
+testing process: separation of concerns and dependency injection. Let&rsquo;s dive
+into my refined approach, complete with concrete Rust examples.</p>
+<h2 id="the-old-approach-merging-fetching-with-manipulation">The Old Approach: Merging Fetching with Manipulation</h2>
+<p>In my initial approach, functions typically resembled:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">fetch_and_process_data</span>(url: <span style="color:#66d9ef">&amp;</span><span style="color:#66d9ef">str</span>) -&gt; Result<span style="color:#f92672">&lt;</span>String, Error<span style="color:#f92672">&gt;</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> data <span style="color:#f92672">=</span> http_client::get(url)<span style="color:#f92672">?</span>; <span style="color:#75715e">// Fetching data
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">let</span> processed_data <span style="color:#f92672">=</span> data.chars().rev().collect(); <span style="color:#75715e">// Manipulating data
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    Ok(processed_data)
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Testing <code>fetch_and_process_data</code> involved mocking the HTTP call, which is inefficient
+and difficult.</p>
+<h2 id="separation-of-concerns">Separation of Concerns</h2>
+<p>The first method I embraced involved separating data fetching functions from those handling data manipulation.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">fetch_data</span>(url: <span style="color:#66d9ef">&amp;</span><span style="color:#66d9ef">str</span>) -&gt; Result<span style="color:#f92672">&lt;</span>String, Error<span style="color:#f92672">&gt;</span> {
+</span></span><span style="display:flex;"><span>    http_client::get(url)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">process_data</span>(data: <span style="color:#66d9ef">&amp;</span><span style="color:#66d9ef">str</span>) -&gt; String {
+</span></span><span style="display:flex;"><span>    data.chars().rev().collect()
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>With this separation, <code>process_data</code> became straightforward to test since it was devoid of any external IO.</p>
+<h2 id="dependency-injection">Dependency Injection</h2>
+<p>Sometimes, it isn&rsquo;t always feasable to seperate fetching the data from processing it. In that case, dependency injection
+is a good solution. Dependency injection involves passing in the fetcher as a function argument, which makes mocking
+the fetcher very easy for testing.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">real_fetcher</span>(url: <span style="color:#66d9ef">&amp;</span><span style="color:#66d9ef">str</span>) -&gt; Result<span style="color:#f92672">&lt;</span>String, Error<span style="color:#f92672">&gt;</span> {
+</span></span><span style="display:flex;"><span>    http_client::get(url)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">fetch_and_process_data</span><span style="color:#f92672">&lt;</span>F<span style="color:#f92672">&gt;</span>(url: <span style="color:#66d9ef">&amp;</span><span style="color:#66d9ef">str</span>, fetcher: <span style="color:#a6e22e">fn</span>(<span style="color:#f92672">&amp;</span><span style="color:#66d9ef">str</span>) -&gt; Result<span style="color:#f92672">&lt;</span>String, Error<span style="color:#f92672">&gt;</span>) -&gt; Result<span style="color:#f92672">&lt;</span>String, Error<span style="color:#f92672">&gt;</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> data <span style="color:#f92672">=</span> fetcher(url);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> processed_data <span style="color:#f92672">=</span> data.chars().rev().collect();
+</span></span><span style="display:flex;"><span>    Ok(processed_data)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Non-test case
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">main</span>() {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> _ <span style="color:#f92672">=</span> fetch_and_process_data(<span style="color:#e6db74">&#34;https://example.com&#34;</span>, real_fetcher);
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Test case
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#75715e">#[cfg(test)]</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">mod</span> tests {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">use</span> <span style="color:#66d9ef">super</span>::<span style="color:#f92672">*</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">mock_fetcher</span>(_url: <span style="color:#66d9ef">&amp;</span><span style="color:#66d9ef">str</span>) -&gt; Result<span style="color:#f92672">&lt;</span>String, Error<span style="color:#f92672">&gt;</span> {
+</span></span><span style="display:flex;"><span>        Ok(<span style="color:#e6db74">&#34;mocked data&#34;</span>.to_string())
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">#[test]</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">test_process_data_with_fn</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">let</span> processed <span style="color:#f92672">=</span> process_data_with_fn(<span style="color:#e6db74">&#34;http://example.com&#34;</span>, mock_fetcher).unwrap();
+</span></span><span style="display:flex;"><span>        assert_eq!(processed, <span style="color:#e6db74">&#34;atad dekcom&#34;</span>.to_string());
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h2 id="wrapping-up">Wrapping up</h2>
+<p>By implementing the separation of concerns, I made my functions more accessible
+to unit testing. Data manipulation functions, when isolated, become particularly
+easy to test due to the absence of external IO operations.</p>
+<p>However, in scenarios where it&rsquo;s challenging to separate data fetching from
+data manipulation, dependency injection serves as a powerful alternative. By
+passing the fetcher function as an argument, we gain the flexibility to easily
+replace it with mock functions during testing, making our codebase more
+adaptable and test-friendly.</p>
+<p>Both these strategies have immensely improved the maintainability and test
+coverage of my projects.</p>
+
+    </div>
+    <footer class="content__footer"></footer>
+
+            </section>
+
+            <section class="page__aside">
+                <div class="aside__about">
+<div class="aside__about">
+    <img class="about__logo" src="https://prestonharrison.com/images/rice.svg" alt="Logo">
+<h1 class="about__title">preston harrison</h1>
+<p class="about__description">My portfolio and blog site.</p>
+</div>
+
+
+<ul class="aside__social-links">
+    
+    <li>
+        <a href="https://github.com/Preston-Harrison" rel="me" aria-label="GitHub" title="GitHub"><i class="fa-brands fa-github" aria-hidden="true"></i></a>&nbsp;
+    </li>
+    
+    <li>
+        <a href="mailto:preston@prestonharrison.com" rel="me" aria-label="Email" title="Email"><i class="fa-solid fa-envelope" aria-hidden="true"></i></a>&nbsp;
+    </li>
+    
+    <li>
+        <a href="https://www.linkedin.com/in/preston-harrison/" rel="me" aria-label="LinkedIn" title="LinkedIn"><i class="fa-brands fa-linkedin-in" aria-hidden="true"></i></a>&nbsp;
+    </li>
+    
+</ul>
+</div>
+                <hr>
+                <div class="aside__content">
+    
+    
+        <p>
+            
+            2023-10-29
+        </p>
+    
+
+    
+
+                </div>
+            </section>
+
+            <footer class="page__footer"><p>
+    
+    
+    
+    
+    
+    
+      
+    
+    
+    
+</p>
+<br /><br />
+<p class="copyright"></p>
+</footer>
+
+        </div>
+    </body>
+
+</html>
