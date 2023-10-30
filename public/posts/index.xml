@@ -2,17 +2,17 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Posts on preston harrison</title>
-    <link>https://prestonharrison.com/posts/</link>
+    <link>https://preston-harrison.github.io/posts/</link>
     <description>Recent content in Posts on preston harrison</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Sun, 29 Oct 2023 10:47:58 -0700</lastBuildDate><atom:link href="https://prestonharrison.com/posts/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 29 Oct 2023 10:47:58 -0700</lastBuildDate><atom:link href="https://preston-harrison.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>How I write more testable code</title>
-      <link>https://prestonharrison.com/posts/how-i-write-testable-code/</link>
+      <link>https://preston-harrison.github.io/posts/how-i-write-testable-code/</link>
       <pubDate>Sun, 29 Oct 2023 10:47:58 -0700</pubDate>
       
-      <guid>https://prestonharrison.com/posts/how-i-write-testable-code/</guid>
+      <guid>https://preston-harrison.github.io/posts/how-i-write-testable-code/</guid>
       <description>Early in my development journey, my functions often combined data fetching with data manipulation. This approach made testing cumbersome, as it required mocking external IO operations. I&amp;rsquo;ve pivoted to two main strategies that have simplified my testing process: separation of concerns and dependency injection. Let&amp;rsquo;s dive into my refined approach, complete with concrete Rust examples.
 The Old Approach: Merging Fetching with Manipulation In my initial approach, functions typically resembled:
 fn fetch_and_process_data(url: &amp;amp;str) -&amp;gt; Result&amp;lt;String, Error&amp;gt; { let data = http_client::get(url)?</description>

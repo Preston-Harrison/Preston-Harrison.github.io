@@ -2,19 +2,19 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>https://prestonharrison.com/</loc>
+    <loc>https://preston-harrison.github.io/</loc>
     <lastmod>2023-10-29T10:47:58-07:00</lastmod>
   </url><url>
-    <loc>https://prestonharrison.com/posts/how-i-write-testable-code/</loc>
+    <loc>https://preston-harrison.github.io/posts/how-i-write-testable-code/</loc>
     <lastmod>2023-10-29T10:47:58-07:00</lastmod>
   </url><url>
-    <loc>https://prestonharrison.com/posts/</loc>
+    <loc>https://preston-harrison.github.io/posts/</loc>
     <lastmod>2023-10-29T10:47:58-07:00</lastmod>
   </url><url>
-    <loc>https://prestonharrison.com/categories/</loc>
+    <loc>https://preston-harrison.github.io/categories/</loc>
   </url><url>
-    <loc>https://prestonharrison.com/series/</loc>
+    <loc>https://preston-harrison.github.io/series/</loc>
   </url><url>
-    <loc>https://prestonharrison.com/tags/</loc>
+    <loc>https://preston-harrison.github.io/tags/</loc>
   </url>
 </urlset>
